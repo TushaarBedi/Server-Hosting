@@ -7,7 +7,7 @@ from flask import Flask, jsonify, render_template, request, flash, redirect
 # SQL Alchemy (ORM)
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, scoped_session, sessionmaker
 from sqlalchemy import create_engine, func, desc,select
 
 # Pandas for Dataframe and Numpy for calculations
@@ -31,7 +31,8 @@ Samples = Base.classes.samples
 Samples_Metadata= Base.classes.samples_metadata
 
 # Create our session (link) from Python to the DB
-session = Session(engine)
+session_factory = sessionmaker(bind=engine)
+session = scoped_session(session_factory)
 
 #################################################
 # Flask Setup
@@ -49,8 +50,8 @@ def index():
 # Returns a list of sample names, as specified in the homework
 @app.route('/names')
 def names():
-    """Return a list of sample names."""
-
+    #"""Return a list of sample names."""
+    # session = Session()
     # Use Pandas to perform the sql query
     stmt = session.query(Samples).statement
     df = pd.read_sql_query(stmt, session.bind)
@@ -63,7 +64,8 @@ def names():
 # Returns a list of OTU descriptions, as specified in the homework
 @app.route('/otu')
 def otu():
-    """Return a list of OTU descriptions."""
+    # session = Session()
+    #"""Return a list of OTU descriptions."""
     results = session.query(OTU.lowest_taxonomic_unit_found).all()
 
     # Use numpy ravel to extract list of tuples into a list of OTU descriptions
@@ -74,7 +76,8 @@ def otu():
 # Returns a json dictionary of sample metadata as specified in the homework
 @app.route('/metadata/<sample>')
 def sample_metadata(sample):
-    """Return the MetaData for a given sample."""
+    # session = Session()
+   # """Return the MetaData for a given sample."""
     sel = [Samples_Metadata.SAMPLEID, Samples_Metadata.ETHNICITY,
            Samples_Metadata.GENDER, Samples_Metadata.AGE,
            Samples_Metadata.LOCATION, Samples_Metadata.BBTYPE]
@@ -100,7 +103,8 @@ def sample_metadata(sample):
 # Returns an integer value for the weekly washing frequency `WFREQ`
 @app.route('/wfreq/<sample>')
 def sample_wfreq(sample):
-    """Return the Weekly Washing Frequency as a number."""
+    # session = Session()
+    #"""Return the Weekly Washing Frequency as a number."""
 
     # `sample[3:]` strips the `BB_` prefix
     results = session.query(Samples_Metadata.WFREQ).\
@@ -114,7 +118,8 @@ def sample_wfreq(sample):
 # Return a list of dictionaries containing sorted lists  for `otu_ids`and `sample_values`
 @app.route('/samples/<sample>')
 def samples(sample):
-    """Return a list dictionaries containing `otu_ids` and `sample_values`."""
+    # session = Session()
+   # """Return a list dictionaries containing `otu_ids` and `sample_values`."""
     stmt = session.query(Samples).statement
     df = pd.read_sql_query(stmt, session.bind)
 

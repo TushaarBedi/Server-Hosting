@@ -1,0 +1,1 @@
+web: gunicorn Tushaar_App:app
